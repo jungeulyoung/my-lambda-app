@@ -3,10 +3,14 @@
 use Illuminate\Support\Facades\Route;
 use Laravel\Octane\Facades\Octane;
 use App\Models\Board;
+use App\Http\Controllers\MonitorController;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('login');
+
+Route::post('/login', [App\Http\Controllers\LoginController::class, 'authenticate'])->name('login.post');
+Route::post('/logout', [App\Http\Controllers\LoginController::class, 'logout'])->name('logout');
 
 
 Route::get('/async-test', function () { 
@@ -40,15 +44,16 @@ Route::get('/boards-simple', function () {
     $executionTime = $endTime - $startTime;
 
     return response()->json([
-         'execution_time' => $executionTime,
+        'execution_time' => $executionTime,
         'boards' => $boards,
-       
     ]);
 });
 
-Route::get('/get-data', function() {
-    $start = microtime(true);
+// 로그인한 사용자만 접근하도록 middleware 설정 (auth)
+Route::middleware(['auth'])->group(function () {
+    // 1. 대시보드 화면
+    Route::get('/dashboard', [MonitorController::class, 'index'])->name('dashboard');
     
-    
-
+    // 2. 실시간 데이터 반환 API (Octane의 속도를 보여줄 핵심 API)
+    Route::get('/api/server-stats', [MonitorController::class, 'stats'])->name('api.stats');
 });
