@@ -1,0 +1,11 @@
+.git
+.env
+node_modules
+vendor
+tests
+storage
+.idea
+.vscode
+Jenkinsfile
+Dockerfile
+README.md
